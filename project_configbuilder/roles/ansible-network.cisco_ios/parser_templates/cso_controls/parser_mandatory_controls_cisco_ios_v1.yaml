@@ -1,0 +1,308 @@
+---
+- name: compliance checks
+  parser_metadata:
+    version: 1.0
+    command: show running-config
+    network_os: ios
+
+#- name: export system facts to playbook
+#  set_vars:
+#    CTM.1.14.1_1: "{{ item.ntp_server.matches.0 }}"
+#    CTM.1.14.1_2: "{{ item.ntp_sync.matches.0 }}"
+#  export: true
+#  register: system_facts
+
+- name: match commands
+  pattern_group:
+
+  - pattern_match:
+      regex: service timestamps debug .*      
+      match_all: true
+    register: service_timestamps_debug
+
+  - pattern_match:
+      regex: service timestamps log .*      
+      match_all: true
+    register: service_timestamps_log
+
+  - pattern_match:
+      regex: logging [0-9].*
+      match_all: true
+    register: logging_server
+    
+  - pattern_match:
+      regex: logging trap .*
+      match_all: true
+    register: logging_trap
+
+  - pattern_match:
+      regex: logging buffered .*
+      match_all: true
+    register: logging_buffered
+
+  - name: parse ip ssh logging
+    pattern_match:
+      regex: ip ssh logging .*
+      match_all: true
+    register: ssh_logging
+
+  - name: parse timestamps
+    pattern_match:
+      regex: username .*      
+      match_all: true
+    register: username
+
+  - name: parse auth server
+    pattern_match:
+      regex: aaa authentication login .*
+      match_all: true
+#       content: "{{ item }}"
+    register: aaa_auth
+
+  - name: parse auth server
+    pattern_match:
+      regex: login block-for .*
+      match_all: true
+#       content: "{{ item }}"
+    register: login_block
+
+  - name: parse auth server
+    pattern_match:
+      regex: ip ssh auhentication-retries .*
+      match_all: true
+#       content: "{{ item }}"
+    register: login_retries
+
+  - name: parse auth server
+    pattern_match:
+      regex: ip ssh time-out .*
+      match_all: true
+#       content: "{{ item }}"
+    register: login_timeout
+
+  - name: parse auth server
+    pattern_match:
+      regex: access-list 91 .*
+      match_all: true
+#       content: "{{ item }}"
+    register: restrict_access
+
+
+  - name: parse NTP server
+    pattern_match:
+      regex: ntp server .*
+      match_all: true
+    register: ntp_server
+#      match_greedy: true
+#      content: "{{ item }}"
+
+  - name: parse NTP source
+    pattern_match:
+      regex: ntp source .*
+      match_all: true
+    register: ntp_source
+#      content: "{{ item }}"
+  register: mapped_commands
+  export: yes
+
+- name: generate json data structure  
+  json_template:
+    template:
+      - key: "{{ ansible_host }}"
+        object:
+          - key: CTM 1.14.1 - Security Event Logging 
+            object:
+              - key: CTM 1.14.1.7 - Capture and Log Security Events
+                object:
+                  - key: command 1
+                    value: "{{ mapped_commands.logging_buffered.0.matches }}"
+                  - key: command 2
+                    value: "{{ mapped_commands.logging_trap.0.matches }}"
+              - key: CTM 1.14.1.8 - Centralise Log Transmission to Splunk/Imperva
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+              - key: CTM 1.14.1.9 - Delete Local Copy on Receipt
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+              - key: CTM 1.14.1.10 - Ensure Read Only on Creation
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+              - key: CTM 1.14.1.11 - Enfore Unauthorised Modificaiton Protection
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+          - key: CTM 1.14.2 - Security Event Log Content
+            object:
+              - key: CTM 1.14.2.12 - Timestamp Present
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.service_timestamps_debug.0.matches }}"
+              - key: CTM 1.14.2.13 - Event Type/Description Present
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.service_timestamps_log.0.matches }}"
+              - key: CTM 1.14.2.14 - Event Type/Description Present
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+          - key: CTM 1.14.3.15 - Remove or Mask Sensitive Data Including ID's and Authentication Passwords
+            object:
+              - key: command
+                value: "DWB00x"
+          - key: CTM 1.14.4.16 - Security Event Logging Process Monitoring
+            object:
+              - key: command
+                value: "DWB00x"
+          - key: SIA 1.3.10.1 - Logical Access - Passwords and Pins
+            object:
+              - key: SIA 1.3.10.1.30 - Adhere to Password and Pin Requirements
+                object:
+                  - key: command
+                    value: "Handoff - CyberArk"
+          - key: SIA 1.3.10.2 - Logical Access - Privilege Default System Accounts (Non-Automated Passworod Change Control Systems)
+            object:
+              - key: SIA 1.3.10.2.31 - Lock and Rename (where possible) Prvileged Default System Accounts
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.username.0.matches }}"
+              - key: SIA 1.3.10.2.32 - Change Prvileged System Account Password After Use and Every 90 Days
+                object:
+                  - key: command
+                    value: "Handoff - CyberArk"
+          - key: SIA 1.3.5.1 - Logical Access Authentication Requirements
+            object:
+              - key: SIA 1.3.5.1.23 - Authenticate All Accounts Before Access Granted
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.aaa_auth.0.matches }}"
+              - key: SIA 1.3.5.1.24 - Do Not Display Passwords or PINs
+                object:
+                  - key: command
+                    value: "Product Default Behaviour"
+              - key: SIA 1.3.5.1.25 - Enforce At Least 30 Minutes Account Re-Activation Delay (Auto Re-Activation Process Only)
+                object:
+                  - key: command 1
+                    value: "{{ mapped_commands.login_block.0.matches }}"
+                  - key: command 2
+                    value: "{{ mapped_commands.login_retries.0.matches }}"
+              - key: SIA 1.3.5.1.26 - Enforce Interactive Session Manual Lock
+                object:
+                  - key: command
+                    value: "Not Applicable"
+              - key: SIA 1.3.5.1.27 - Force Re-Auth After 15 MIns Inactivity or Interruption
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.login_timeout.0.matches }}"
+          - key: SIA 1.3.8.1 - Logical Access - Account Suspension
+            object:
+              - key: SIA 1.3.8.1.28 - Suspend Ppersonal Dormant Accounts After 60 Days
+                object:
+                  - key: command
+                    value: "Handoff - CyberArk"
+              - key: SIA 1.3.8.1.29 - Delete or Remove Permissions for Dormant Accounts After 150 Days
+                object:
+                  - key: command
+                    value: "Handff - CyberArk"
+          - key: SOE 1.1.3 - Create Secure Configuration Documents
+            object:
+              - key: SOE 1.1.3 - Create SCD
+                object:
+                  - key: command
+                    value: "SCD available"
+          - key: SOE 1.2.7 - Restrict Access to Admin Interfaces/Ports
+            object:
+              - key: SOE 1.2.7.34 - Restrict Access to Management Ports and Do Not Expose to Untrusted Networks
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.restrict_access.0.matches }}"
+          - key: SOE 1.2.7 - Restrict Access to Admin Interfaces/Ports
+            object:
+              - key: SOE 1.2.7.34 - Restrict Access to Management Ports and Do Not Expose to Untrusted Networks
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+          - key: SOE 1.5.8 - Restrict Access to Admin Interfaces/Ports
+            object:
+              - key: SOE 1.5.8.35 - Display Legal Disclaimer
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+              - key: SOE 1.5.8.36 - Force Banner Acknowledgement Before Authentication
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+          - key: SOE 1.6.1 - Define Security Events and Associated Management Requirements
+            object:
+              - key: SOE 1.6.1.37 - Authentication Success and Failure
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+              - key: SOE 1.6.1.38 - Authorisation Success and Failure
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+              - key: SOE 1.6.1.39 - Anti-Malware Detection
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+              - key: SOE 1.6.1.40 - Configuration Changes
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+              - key: SOE 1.6.1.41 - Platform Start-Up and Shutdown
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+              - key: SOE 1.6.1.42 - User, Group and Privilege Changes
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+              - key: SOE 1.6.1.43 - Privileged Actions
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+          - key: SOE 1.6.2 - Use an Approved Event Logging Solution
+            object:
+              - key: SOE 1.6.2.44 - See CTM 1.14.1
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.xxx.0.matches }}"
+          - key: SOE 1.6.2 - Use an Approved Event Logging Solution
+            object:
+              - key: SOE 1.6.2.44 - See CTM 1.14.1
+                object:
+                  - key: command
+                    value: "{{ mapped_commands.logging_server.0.matches }}"
+          - key: SOE 1.6.4 - Use the Standard Source of UTC Time
+            object:
+              - key: SOE 1.6.4.45 - Configure Standard and Approved NTP Source
+                object:
+                  - key: command 1
+                    value: "{{ mapped_commands.ntp_server.0.matches }}"
+ #  loop: "{{ mapped_commands }}"
+  export: yes
+  register: control_mapping
+  
+
+#- name: GENERATE JSON DATA STRUCTURE
+#  
+#  export: yes
+#  register: ntp_mappings
+
+#- name: GENERATE JSON DATA STRUCTURE
+#  json_template:
+#    template:
+#      - key: "CTM.1.14.1"
+#        object:
+#          - key: ntp
+#            value: "{{ item.ntp.matches.0 }}"
+#          - key: ntp_source
+#            value: "{{ item.ntp.matches.1 }}"
+#  loop: "{{ ntp }}"
+#  export: yes
+#  export_as: dict
+#  extend: cisco_ios
+#  register: ntp_mapping

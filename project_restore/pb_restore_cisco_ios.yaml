@@ -1,0 +1,27 @@
+---
+
+- name: Running restore playbook for Cisco IOS device
+  connection: network_cli
+  hosts: localhost
+  gather_facts: false
+  vars_prompt:
+  - name: target_host
+    prompt: Please enter the target host IP
+    private: no
+  tasks:
+    - add_host:
+        name: "{{ target_host }}"
+        ansible_network_os: ios
+        groups: dynamically_created_hosts
+      register: dynamically_created_hosts
+    - debug:
+        msg: "The target IP to push restore config is {{ dynamically_created_hosts.add_host.host_name }}"
+  
+- hosts: dynamically_created_hosts
+  connection: network_cli
+  gather_facts: false
+  tasks:
+    - name: Including role ansible-network.cisco_ios
+      include_role:
+        name: ansible-network.cisco_ios
+        tasks_from: barcap_test/task_restore_cisco_ios_v1.yaml

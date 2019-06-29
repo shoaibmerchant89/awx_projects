@@ -1,0 +1,17 @@
+- name: Load inventory to Ansible Tower
+  hosts: 127.0.0.1
+  connection: local
+  gather_facts: false
+  
+  tasks:
+  
+  - name: Add tower inventory source
+    tower_inventory_source:
+      name: Inventory source
+      source: file
+      credential: tower
+      inventory: /etc/ansible/hosts
+      update_on_launch: true
+      overwrite: true
+      state: present
+      tower_verify_ssl: false

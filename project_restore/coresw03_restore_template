@@ -1,0 +1,180 @@
+Building configuration...
+
+Current configuration : 2677 bytes
+!
+! Last configuration change at 16:06:03 IST Sun Apr 21 2019
+!
+version 15.1
+service timestamps debug datetime msec
+service timestamps log datetime msec
+no service password-encryption
+service compress-config
+!
+hostname SW03
+!
+boot-start-marker
+boot-end-marker
+!
+!
+vrf definition dmz
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition in
+ !
+ address-family ipv4
+ exit-address-family
+!
+vrf definition out
+ !
+ address-family ipv4
+ exit-address-family
+!
+enable secret 4 uL3ahII.qXcmuiG8zcrkZkgNezrXtDCZ.UPBVEbygK2
+!
+username admin privilege 15 password 0 Labrat@123
+no aaa new-model
+clock timezone IST 5 30
+!
+ip cef
+!
+!
+no ip domain-lookup
+ip domain-name networkology.net
+no ipv6 cef
+ipv6 multicast rpf use-bgp
+!
+!
+!
+!
+!
+!
+!
+spanning-tree mode pvst
+spanning-tree extend system-id
+!
+!
+!
+!
+vlan internal allocation policy ascending
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+interface Ethernet0/0
+ switchport access vlan 64
+ switchport mode access
+ duplex auto
+!
+interface Ethernet0/1
+ switchport access vlan 64
+ switchport mode access
+ duplex auto
+!
+interface Ethernet0/2
+ switchport access vlan 64
+ switchport mode access
+ duplex auto
+!
+interface Ethernet0/3
+ switchport access vlan 64
+ switchport mode access
+ duplex auto
+!
+interface Ethernet1/0
+ switchport access vlan 172
+ switchport mode access
+ duplex auto
+!
+interface Ethernet1/1
+ switchport access vlan 172
+ switchport mode access
+ duplex auto
+!
+interface Ethernet1/2
+ switchport access vlan 172
+ switchport mode access
+ duplex auto
+!
+interface Ethernet1/3
+ switchport access vlan 172
+ switchport mode access
+ duplex auto
+!
+interface Ethernet2/0
+ switchport access vlan 10
+ switchport mode access
+ duplex auto
+!
+interface Ethernet2/1
+ switchport access vlan 10
+ switchport mode access
+ duplex auto
+!
+interface Ethernet2/2
+ switchport access vlan 10
+ switchport mode access
+ duplex auto
+!
+interface Ethernet2/3
+ switchport access vlan 10
+ switchport mode access
+ duplex auto
+!
+interface Ethernet3/0
+ duplex auto
+!
+interface Ethernet3/1
+ duplex auto
+!
+interface Ethernet3/2
+ duplex auto
+!
+interface Ethernet3/3
+ switchport access vlan 192
+ switchport mode access
+ duplex auto
+!
+interface Vlan10
+ vrf forwarding in
+ ip address 10.1.1.2 255.255.255.0
+!
+interface Vlan64
+ vrf forwarding out
+ ip address 64.1.1.2 255.255.255.0
+!
+interface Vlan172
+ vrf forwarding dmz
+ ip address 172.16.1.2 255.255.255.0
+!
+interface Vlan192
+ ip address 192.168.1.60 255.255.255.0
+!
+!
+no ip http server
+!
+ip route vrf dmz 0.0.0.0 0.0.0.0 172.16.1.1
+ip route vrf in 0.0.0.0 0.0.0.0 10.1.1.1
+ip route vrf out 0.0.0.0 0.0.0.0 64.1.1.1
+!
+!
+!
+!
+control-plane
+!
+!
+line con 0
+ logging synchronous
+line aux 0
+line vty 0 4
+ login local
+ transport input ssh
+!
+end

@@ -1,0 +1,36 @@
+---
+
+- name: Generate report for mandatory controls
+  hosts: apac, emea
+  connection: network_cli
+  gather_facts: true
+  
+  tasks:
+
+    - name: get running-config
+      ios_command:
+        commands:
+          - show run
+      register: run_config
+    
+    - name: import the network-engine roles/ansible-network
+      import_role:
+        name: ansible-network.network-engine
+
+    - name: Sending registered output to parser
+      command_parser:
+        file: "/etc/ansible/roles/ansible-network.cisco_ios/parser_templates/cso_controls/parser_mandatory_controls_cisco_ios_v1.yaml"
+        content: "{{ run_config.stdout.0 }}"
+      vars:
+        - ansible_network_os: ios
+
+    - debug:
+        msg: "{{ mapped_commands.ntp_server }}"
+
+    - name: Display mappings
+      debug:
+        var: control_mapping
+
+# use the below content lines if you want to check the mandatory control mapping for a specific NES007 template
+#        content: "{{ lookup('file', '/etc/ansible/roles/ansible-network.cisco_ios/templates/ios/cisco_3850_16.03_NES-007.j2') }}"
+#        content: "etc/ansible/roles/ansible-network.cisco_ios/templates/cisco_3850_16.03_nes-007.j2"

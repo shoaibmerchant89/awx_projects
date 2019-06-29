@@ -1,0 +1,83 @@
+---
+- name: Config Builder
+  hosts: localhost
+  connection: local
+#  vars_files: /etc/ansible/group_vars/apac-sgd-dmz.yaml
+#  vars_prompt:
+#    - name: "region"
+#      prompt: |
+#        ---------------------------------------------------------------------------
+#        Select region  ---Type the region exactly as shown below---
+#        ---------------------------------------------------------------------------
+#        - amer
+#        - apac
+#        - emea
+#      private: no
+#    - name: "dc"
+#      prompt: |
+#       ---------------------------------------------------------------------------
+#        Select Data Center  ---Type the DC exactly as shown below---
+#        ---------------------------------------------------------------------------
+#        AMER
+#        - crc
+#        - pic
+#        - nys
+#        APAC
+#        - hkd
+#        - sgd
+#        - tkd
+#        - tkr
+#        EMEA
+#        - slo
+#        - glo
+#        - 5nc
+#        - gem
+#        ALL
+#        - generic
+#
+#      private: no
+#
+#    - name: "env"
+#      prompt: |
+#       ---------------------------------------------------------------------------
+#        Select the environment  ---Type the environment exactly as shown below---
+#        ---------------------------------------------------------------------------
+#        - campus
+#        - dmz
+#        - edgeconnect
+#      private: no
+# 
+  tasks:
+
+#    - name: Ansible fact - ansible_date_time
+#      debug:
+#        var: ansible_date_time
+
+#    - name: Including ansible-network.cisco_ios role into play
+#      include_role: 
+#        name: ansible-network.cisco_ios
+#        tasks_from: barcap_test/task_confgen_prompts_v1.yaml
+    
+#    - name: Include vars based on user input
+#      include_vars:
+#        file: "/etc/ansible/group_vars/{{ region }}-{{ dc }}-{{ env }}.yaml"
+#      register: var_file_used
+
+#    - name: Print Var file name
+#      debug:
+#        msg: "Var files used is {{ var_file_used.ansible_included_var_files }}"
+        
+    - name: Include vars
+      include_vars:
+        file: /var/lib/awx/projects/project_configbuilder/group_vars/apac-sgd-dmz.yaml
+
+    - name: Generate NES007 configuration
+      template:
+        src: /var/lib/awx/projects/project_configbuilder/roles/ansible-network.cisco_ios/templates/ios/cisco_test.j2
+        dest: "/var/lib/awx/projects/project_configbuilder/builds/cisco_3850_16.03_NES-007_{{ ansible_date_time.date }}_{{ ansible_date_time.time }}.txt"
+        owner: root
+        group: root
+        mode: 0777
+#      include_vars:
+#        file: /etc/ansible/group_vars/apac-sgd-dmz.yaml
+#        backup: yes

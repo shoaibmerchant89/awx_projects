@@ -1,0 +1,35 @@
+---
+
+- name: Generate report for mandatory controls
+  hosts: apac
+  connection: network_cli
+  gather_facts: false
+  
+  tasks:
+
+    - name: get running-config
+      ios_command:
+        commands:
+          - show run
+      register: run_config
+
+    - debug:
+        msg: "{{ run_config.stdout_lines}}"
+    
+    - name: import the network-engine roles/ansible-network
+      import_role:
+        name: ansible-network.network-engine
+
+    - name: Sending registered output to parser
+      command_parser:
+        file: "/etc/ansible/roles/ansible-network.cisco_ios/parser_templates/cso_controls/mandatory_controls.yaml"
+#        content: "{{ lookup('file', '/etc/ansible/roles/ansible-network.cisco_ios/templates/ios/cisco_3850_16.03_NES-007.j2') }}"
+#        content: "etc/ansible/roles/ansible-network.cisco_ios/templates/cisco_3850_16.03_nes-007.j2"
+        content: "{{ run_config.stdout.0 }}"
+      vars:
+        - ansible_network_os: ios
+      delegate_to: localhost
+
+    - name: Display mappings
+      debug:
+        var: control_mapping

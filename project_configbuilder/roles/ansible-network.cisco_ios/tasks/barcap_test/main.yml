@@ -1,0 +1,7 @@
+---
+
+#- name: Running main.yaml from /etc/ansible/roles/cisco_ios/tasks directory
+#  import_tasks: task_pre_git_v1.yaml
+
+- name: Running main.yaml from /etc/ansible/roles/cisco_ios/tasks directory
+  import_tasks: task_backup_cisco_ios_v5.yaml

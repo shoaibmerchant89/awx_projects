@@ -1,0 +1,59 @@
+---
+#- name: initialize function
+#  include_tasks: includes/init1.yaml
+#
+#- name: run command and return configuration
+#  ios_command:
+#    commands: show startup-config
+#  register: startup_config
+# 
+#    command: "{{ ios_config_source[source | default('startup')] }}"
+#  register: configuration
+#
+#- name: set the configuration fact
+#  set_fact:
+#    configuration: "{{ configuration.stdout }}"
+#
+#- name: parse system configuration
+#  command_parser:
+#    dir: "{{ role_path }}/parser_templates/config_manager"
+#    content: "{{ configuration }}"
+#  register: parsed
+#
+#- name: debug parse
+#  debug:
+#    msg: "{{ parsed }}"
+#
+#
+
+- name: Backing up configuration
+  ios_config:
+    backup: yes
+  register: result
+
+- name: Removing gibberish
+  lineinfile:
+    path: "{{ result.backup_path }}"
+    regexp: "{{ item.regex }}"
+    state: absent
+  with_items:
+    - regex: ^.*Building configuration.*$
+    - regex: ^.*Current configuration.*$
+    - regex: ^.*version .*$
+
+- debug:
+    msg:
+      - "Backup path is {{ result.backup_path }}"
+
+#- name: move file to centralised backup directory
+#  shell: "sudo mv {{ result.backup_path }} /etc/backup"
+#  become: yes
+#  become_method: sudo
+#
+#- debug:
+#    msg: "Curated files saved at {{ result.backup_path }}"
+#
+### Below lines are changed in backup_path in ios_config.py
+### backup_path = '/home/shoaib/Desktop/backup'
+### working_path = '/home/shoaib/Desktop/backup'
+### ios_config.py_backup saved for rollback when backup_path option is availbel in 2.8

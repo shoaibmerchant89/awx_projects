@@ -1,0 +1,15 @@
+---
+
+- name: Running pb_backup_cisco_ios_v1.yml from /etc/projects/ directory
+  connection: network_cli
+  hosts: apac
+  gather_facts: false
+
+  tasks:
+    - include_role: 
+        name: ansible-network.cisco_ios
+        tasks_from: barcap_test/task_backup_cisco_ios_v5.yaml
+    
+    - include_role:
+        name: git
+        tasks_from: post_git.yaml

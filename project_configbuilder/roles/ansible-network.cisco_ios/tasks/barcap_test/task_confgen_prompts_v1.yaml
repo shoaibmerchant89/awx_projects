@@ -1,0 +1,92 @@
+---
+
+    - name: region
+      pause:
+          prompt: |
+           ---------------------------------------------------------------------------
+           Select Region  (Type the Region exactly as shown below)
+           ---------------------------------------------------------------------------
+           - amer
+           - apac
+           - emea
+           - bcus
+      register: region
+
+    - name: amer-dc
+      pause:
+          prompt: |
+           ---------------------------------------------------------------------------
+           Select Data Center  (Type the DC exactly as shown below)
+           ---------------------------------------------------------------------------
+           - pic
+           - crc
+           - nys
+           - generic
+      when: region.user_input == 'amer'
+      register: dc
+
+    - name: apac-dc
+      pause:
+          prompt: |
+           ---------------------------------------------------------------------------
+           Select Data Center  (Type the DC exactly as shown below)
+           ---------------------------------------------------------------------------
+           - hkd
+           - sgd
+           - tkd
+           - tkr
+           - sgd1 (for edgeconnect)
+           - sgd2 (for edgeconnect)
+           - generic
+      when: region.user_input == 'apac'
+      register: dc
+
+    - name: emea-dc
+      pause:
+          prompt: |
+           ---------------------------------------------------------------------------
+           Select Data Center  (Type the DC exactly as shown below)
+           ---------------------------------------------------------------------------
+           - slo
+           - glo
+           - 5nc
+           - gem
+           - generic
+      when: region.user_input == 'emea'
+      register: dc
+
+    - name: bcus
+      pause:
+          prompt: |
+           ---------------------------------------------------------------------------
+           Select Data Center  (Type the DC exactly as shown below)
+           ---------------------------------------------------------------------------
+           - generic
+      when: region.user_input == 'bcus'
+      register: dc
+
+    - name: env
+      pause:
+          prompt: |
+           ---------------------------------------------------------------------------
+           Select DC Environment  (Type the DC exactly as shown below)
+           ---------------------------------------------------------------------------
+           - campus
+           - dmz
+           - edgeconnect
+      when: ( region.user_input == 'amer' ) or ( region.user_input == 'apac' ) or ( region.user_input == 'emea' ) and not ( dc.user_input == 'sgd1')
+      register: env
+
+    - name: env-bcus
+      pause:
+          prompt: |
+           ---------------------------------------------------------------------------
+           Select BCUS Environment  (Type the DC exactly as shown below)
+           ---------------------------------------------------------------------------
+           - generic
+      when: ( region.user_input == 'bcus')
+      register: env-bcus
+      
+    - debug:
+        msg: "{{ dc }}"
+        

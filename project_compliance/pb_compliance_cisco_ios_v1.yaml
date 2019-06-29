@@ -1,0 +1,40 @@
+---
+
+- name: Config Builder
+  hosts: ios01
+  connection: network_cli 
+  gather_facts: false  
+
+  tasks:
+    
+    - name: get running-config
+      ios_command:
+        commands:
+          - show running-config
+      register: run_config
+
+    - debug:
+        msg: "{{ run_config.stdout_lines }}"
+    
+    - name: save running config to file
+      copy:
+        dest: /home/shoaib/Desktop/builds/running_config
+        content: "{{ run_config.stdout_lines }}"        
+      delegate_to: localhost
+
+#    - name: remove \n
+#      command: "sed 's/\\n/\'$'\n''/g' <<< /home/shoaib/Desktop/builds/running_config"
+#      delegate_to: localhost
+
+#    - name: line in file
+#      replace:
+#        path: /home/shoaib/Desktop/builds/running_config
+#        contents: "{{ lookup('file', '/home/shoaib/Desktop/builds/running_config') | replace('\n', '')}}"
+    - name: Diff check
+      command: diff -y /home/shoaib/Desktop/builds/cisco_3850_16.03_NES-007_2019-05-09_17:44:12.txt /home/shoaib/Desktop/builds/running_config
+      register: diff_check
+      delegate_to: localhost
+      ignore_errors: true
+    
+    - debug:
+        msg: "{{ diff_check.stdout }}"

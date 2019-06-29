@@ -1,0 +1,29 @@
+---
+
+- name: list of backups
+  shell: |
+    ls /home/shoaib/Desktop/backup
+  register: list_of_backup
+  delegate_to: 127.0.0.1
+
+- debug:
+    msg: "{{ list_of_backup.stdout_lines }}"
+
+- pause:
+    prompt: Enter the backup file name from the list above
+  register: backup_file
+    
+- name: Restore Configuration
+  ios_config:
+    src: "/home/shoaib/Desktop/backup/{{ backup_file.user_input }}"
+  register: post_restore
+
+- debug:
+    msg: "{{ post_restore }}"
+
+
+# targets the host coresw03 in the ansible tower inventory referenced in the project 
+# connection type used is network_cli which is recommedned for network device connections
+# debug:msg module used to display the register variable captured  in "Gather IOS Facts" task
+# ios_config module used with 'backup' parameter to backup "running-config" and NOT "startup-config"
+# src: by default path to the 'coresw03_restore_tempalte' is relative to the playbook viz, it is in the same directory as the playbook.

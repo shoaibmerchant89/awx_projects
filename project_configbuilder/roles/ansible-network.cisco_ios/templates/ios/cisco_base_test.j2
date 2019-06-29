@@ -1,0 +1,20 @@
+!
+{% block ip_classless_3850 %}
+{% endblock %}
+no ip http server
+username barcadmin secret $encrypt_type$ $user_password$
+!
+{% block tacacs_3850 %}
+{% endblock %}
+!
+{% block snmp_server_3850 %}
+{% endblock %}
+!
+{% for server in logging_server %}
+logging {{ server }}
+{% endfor %}
+!
+{% for server in ntp_server %}
+ntp server {{server}}
+{% endfor %}
+!

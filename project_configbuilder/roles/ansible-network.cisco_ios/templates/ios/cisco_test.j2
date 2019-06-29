@@ -1,0 +1,13 @@
+{% extends "cisco_base_test.j2" %}
+{% block ip_classless_3850 %}
+ip classless
+{% endblock ip_classless_3850 %}
+
+{% block snmp_server_3850 %}
+snmp-server ifindex persist
+{% for server in snmp_server %}
+snmp-server host {{server}} $community_string$ mac-notification
+{% endfor %}
+{% endblock snmp_server_3850 %}
+
+! if else to be tested

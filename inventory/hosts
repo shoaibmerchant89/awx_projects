@@ -1,0 +1,99 @@
+---
+all:
+  children:
+      all_regions:
+        children:
+          apac:
+            children:
+              apac_cisco:
+                children:
+                  apac_ios:
+                    hosts:
+                      ios01:
+                        ansible_host: '192.168.1.101'
+                        ansible_network_os: ios
+#                  apac_nxos:
+#                    hosts:
+#                      nxos01:
+#                        ansible_host: '192.168.1.104'
+#                        ansible_network_os: nxos
+          emea:
+            children:
+              emea_cisco:
+                children:
+                  emea_ios:
+                    hosts:
+                      ios02:
+                        ansible_host: '192.168.1.102'
+                        ansible_network_os: ios
+#                  emea_nxos:
+#                    hosts:
+#                      nxos02:
+#                        ansible_host: '192.168.1.105'
+#                        ansible_network_os: nxos
+                       
+          amer:
+            children:
+              amer_cisco:
+                children:
+                  amer_ios:
+                    hosts:
+                      ios03:
+                        ansible_host: '192.168.1.103'
+                        ansible_network_os: ios
+#                  amer_nxos:
+#                    hosts:
+#                      nxos03:
+#                        ansible_host: '192.168.1.106'
+#                        ansible_network_os: nxos
+  vars:
+    ansible_user: admin
+    ansible_ssh_pass: Labrat@123
+    ansible_become_pass: Labrat@123
+    
+...
+
+
+
+#---
+#all:
+#  children:
+#    cisco:
+#      children:
+#        ios:
+#          hosts:
+#            ios01:
+#              ansible_host: '192.168.1.101'
+#            ios02:
+#              ansible_host: '192.168.1.102'
+#            ios03:
+#              ansible_host: '192.168.1.103'
+#  children:
+#    regions:
+#      children:
+#        apac:
+#          children:
+#            cisco:
+#              children:
+#                ios:
+#                  hosts:
+#                    ios01:
+#        emea:
+#          children:
+#            cisco:
+#              children:
+#                ios:
+#                  hosts:
+#                    ios02:
+#        amer:
+#          children:
+#            cisco:
+#              children:
+#                ios:
+#                  hosts:
+#                    ios03:
+#                   
+#  vars:
+#    ansible_user: admin
+#    ansible_ssh_pass: Labrat@123
+#...

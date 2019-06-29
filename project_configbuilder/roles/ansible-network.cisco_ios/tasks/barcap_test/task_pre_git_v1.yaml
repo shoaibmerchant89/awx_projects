@@ -1,0 +1,59 @@
+---
+#- name: Running ios_facts under task_backup_cisco_ios_v3.yaml from /etc/ansible/roles/cisco_ios/tasks directory
+#  ios_facts:
+#    gather_subset: interfaces
+#
+#- name: Debug IOS_FACTS
+#  debug:
+#    var: "{{ ansible_facts | to_nice_json }}"
+#
+- name: "Git, anything to fetch?"
+  shell: "git fetch --dry-run"
+  delegate_to: 127.0.0.1
+  register: gitfetch_check
+
+- debug:
+    msg: {{ gitfetch_check }}
+#  git:
+#    repo: git@github.com:shoaibmerchant89/ansible.git
+#    clone: no
+#    dest: /etc/ansible/roles/cisco_ios/backup
+#    update: yes
+#    version: master
+#  register: gitcheck
+#  ignore_errors: True
+#  delegate_to: 127.0.0.1
+#  
+#- debug:
+#    var: gitcheck
+#
+#- name: Git - Adding files
+#  shell: "git add -A"
+#  args:
+#    chdir: /etc/ansible/roles/cisco_ios/backup
+#  register: gitadd
+#  when: gitcheck.after is defined
+#  delegate_to: 127.0.0.1
+#  
+#- debug:
+#    var: gitadd
+#
+#
+#  when: "'10.1.1.3' in ansible_facts.net_all_ipv4_addresses"
+#  when: ansible_facts['net_hostname'] == "CORESW03"
+#
+#- name: Capture directory where backup file is stored
+#  debug:
+#    msg:
+#      - "Backup path is {{ result.backup_path }}"
+#      - "Changed: {{ result.changed }}"
+#    msg: "The backup file is saved in {{ result.backup_path }}"
+#
+# targets the host coresw03 in the ansible tower inventory referenced in the project 
+# connection type used is network_cli which is recommedned for network device connections
+# ios_facts is a dedicated module to gather cats about IOS devices. Look up documentation to extract specific facts using debug:msg
+# ios_config module used with 'backup' parameter to backup "running-config" and NOT "startup-config"
+# debug:msg module used to display the register variable captured  in "Gather IOS Facts" task
+# debug:var module used to display the registered variable captured in "Backup Configuration" task
+# debug:var and debug:msg are mutually exclusive
+# return value of backup_path is returned in the variable backup_directory. This is only returned when backup=yes

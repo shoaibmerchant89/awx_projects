@@ -1,0 +1,30 @@
+---
+- name: IOS Config Backup
+  hosts: coresw03
+  connection: network_cli
+  gather_facts: no
+
+  tasks:
+#    - name: Gather IOS Facts
+#      ios_facts:
+#      register: version
+#
+#    - debug:
+#         msg: "{{version}}"
+
+    - name: Backup Configuration
+      ios_config:
+        backup: yes
+      diff: yes
+      register: backup_directory
+
+    - debug:
+         var: backup_directory
+
+# targets the host coresw03 in the ansible tower inventory referenced in the project 
+# connection type used is network_cli which is recommedned for network device connections
+# ios_facts is a dedicated module to gather cats about IOS devices. Look up documentation to extract specific facts using debug:msg
+# debug:msg module used to display the register variable captured  in "Gather IOS Facts" task
+# ios_config module used with 'backup' parameter to backup "running-config" and NOT "startup-config"
+# debug:var module used to display the registered variable captured in "Backup Configuration" task
+# return value of backup_path is returned in the variable backup_directory. This is only returned when backup=yes
