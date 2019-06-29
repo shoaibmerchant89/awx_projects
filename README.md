@@ -1,1 +1,1 @@
-# /home/shoaib/Desktop/projects/
+# /var/lib/awx/projects/
