@@ -69,7 +69,7 @@
         
     - name: Include vars
       include_vars:
-        file: /var/lib/awx/projects/project_configbuilder/group_vars/apac-sgd-dmz.yaml
+        file: /var/lib/awx/projects/project_configbuilder/group_vars/{{ region }}-{{ dc }}-{{ env }}.yaml
 
     - name: Generate NES007 configuration
       template:
