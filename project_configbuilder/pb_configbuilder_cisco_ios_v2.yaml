@@ -41,12 +41,7 @@
 #      prompt: |
 #       ---------------------------------------------------------------------------
 #        Select the environment  ---Type the environment exactly as shown below---
-#        ---------------------------------------------------------------------------
-#        - campus
-#        - dmz
-#        - edgeconnect
-#      private: no
-# 
+#        --------------------------
   tasks:
 
 #    - name: Ansible fact - ansible_date_time

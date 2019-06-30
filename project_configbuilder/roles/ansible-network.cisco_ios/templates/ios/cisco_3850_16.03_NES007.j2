@@ -3,19 +3,21 @@
 ip classless
 {% endblock ip_classless_3850 %}
 
-{% block snmp_server_3850 %}
-snmp-server ifindex persist
-{% for server in snmp_server %}
-snmp-server host {{server}} $community_string$ mac-notification
-{% endfor %}
-{% endblock snmp_server_3850 %}
-
 {% block tacacs_3850 %}
 tacacs server TACACS_SERVER
 {% for server in auth_server %}
  address ipv4 {{server}}
 {% endfor %}
- key $encrypt_type$ $tacacs_password$
+ key 0 {{ tacacs_password }}
 tacacs-server directed-request
 tacacs-server timeout 10
 {% endblock tacacs_3850 %}
+
+{% block snmp_server_3850 %}
+snmp-server ifindex persist
+{% for server in snmp_server %}
+snmp-server host {{server}} {{ snmp_community_string }} mac-notification
+{% endfor %}
+{% endblock snmp_server_3850 %}
+
+

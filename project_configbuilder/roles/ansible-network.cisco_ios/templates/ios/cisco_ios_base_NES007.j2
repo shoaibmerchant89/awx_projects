@@ -13,7 +13,7 @@ service counters max age 5
 no service finger
 no service udp-small-servers
 no service tcp-small-servers
-no ip http secure-server
+no ip http server
 no ip source-route
 no ip forward-protocol udp tftp
 no ip forward-protocol udp domain
@@ -31,12 +31,12 @@ ip tcp synwait-time 5
 no ip http server
 no monitor event-trace timestamps
 no ip bootp server
-username barcadmin secret $encrypt_type$ $user_password$
-enable secret $encrypt_type$ $secret_password$
+username barcadmin secret {{ local_username_password }}
+enable secret {{ enable_secret_password }}
 ip domain name net.global
 no ip domain-lookup
-hostname $host_name$
-vtp domain $domain_name$
+hostname {{ hostname }}
+vtp domain {{ vtp_domain_name }}
 vtp mode transparent
 !
 {% block tacacs_3850 %}
@@ -49,13 +49,13 @@ aaa group server tacacs+ AAA_SERVER
 {% for server in auth_server %}
  server {{server}}
 {% endfor %}
-ip tacacs source-interface $mgmt_interface$
-aaa authentication login default group AAA_SERVER local
-aaa authentication enable default group AAA_SERVER enable
+ip tacacs source-interface {{ mgmt_interface }}
+aaa authentication login default local
+aaa authentication enable default enable
 aaa authorization config-commands
-aaa authorization exec default if-authenticated
-aaa authorization commands 1 default if-authenticated
-aaa authorization commands 15 default group AAA_SERVER local
+aaa authorization exec default none
+aaa authorization commands 1 default none
+aaa authorization commands 15 default none
 aaa authorization console
 aaa accounting exec default start-stop group AAA_SERVER
 aaa accounting commands 0 default start-stop group AAA_SERVER
@@ -82,45 +82,42 @@ access-list 42 permit {{server}}
 access-list 42 deny any log
 snmp-server community public RO 40
 snmp-server community private RO 40
-snmp-server community $community_string$ RO 41
-snmp-server community $community_string$ RW 42
-snmp-server group V3-RW-GROUP v3 priv write V3-RW-VIEW access 42
-snmp-server view V3-RW-VIEW internet included
+snmp-server community {{ snmp_community_string }} RO 41
+snmp-server community {{ snmp_community_string }} RW 42
 snmp-server enable traps
-snmp-server location $cab_locale$
-snmp-server contact $contact_detail$
+snmp-server location {{ snmp_cabinet_location }}
+snmp-server contact {{ snmp_contact_details }}
 snmp-server trap link ietf
 snmp-server enable traps snmp auhentication linkdown linkup coldstart warmstart
 snmp-server enable traps syslog
 snmp-server enable traps envmon fan shutdown supply temperature status
 snmp-server packetsize 8192
 snmp ifmib ifindex persist
-snmp-server ifindex persist
 snmp-server enable traps hsrp
 snmp-server enable traps config
 snmp-server enable traps vtp
 {% for server in snmp_server %}
-snmp-server host {{server}} $community_string$
+snmp-server host {{server}} {{ snmp_community_string }}
 {% endfor %}
-snmp-server trap-source $mgmt_interface$
+snmp-server trap-source {{ mgmt_interface }}
 {% block snmp_server_3850 %}
 {% endblock %}
 !
 ! LOGGING
 !
-logging source-interface $mgmt_interface$ #vrf $mgmt_vrf_name$#
+logging source-interface {{ mgmt_interface }}
 {% for server in logging_server %}
 logging {{ server }}
 {% endfor %}
 logging trap informational
-logging buffered $buffer_value$
+logging buffered 
 logging console debugging
 logging monitor debugging
 logging rate-limit console 10
 !
 ! NTP
 !
-ntp source $mgmt_interface$
+ntp source {{ mgmt_interface }}
 {% for server in ntp_server %}
 ntp server {{server}}
 {% endfor %}
@@ -139,16 +136,16 @@ clock summer-time {{item}}
 !
 ! SSH
 !
-crypto key generate rsa general-keys modulus $key_value$
+crypto key generate rsa general-keys modulus 2048
 ip ssh version 2
 ip ssh time-out 60
 ip ssh authentication-retries 2
 ip ssh logging events
-ip ssh source-interface $mgmt_interface$
+ip ssh source-interface {{ mgmt_interface }}
 !
 ! LOCAL SECURITY
 !
-login block-for 120 attempts 5 within 30
+login block-for 1800 attempts 5 within 30
 access-list 91 Remark Management access to Devices via Jump server!!!
 access-list 91 permit host <management_station>
 login quiet-mode access-class 91
@@ -176,14 +173,14 @@ privilege exec level 15 ssh
 privilege exec level 15 telnet
 line con 0
 exec-timeout 5 0
-location $cab_locale$
-password $encrypt_type$ $con_password$
+location {{ snmp_cabinet_location }}
+password {{ console_password }}
 logging synchronous
 transport preferred none
 stopbits 1
 line aux 0
-location $cab_locale$
-password $encrypt_type$ $con_password$
+location {{ snmp_cabinet_location }}
+password {{ console_password }}
 exec-timeout 5 0
 logging synchronous
 no exec
@@ -192,16 +189,16 @@ transport output none
 stopbits 1
 line vty 0 4
 exec-timeout 5 0
-location $cab_locale$
-password $encrypt_type$ $vty_password$
+location {{ snmp_cabinet_location }}
+password {{ vty_password }}
 access-class 91 in
 logging synchronous
 transport input ssh
 transport output none
 line vty 5 15
 exec-timeout 5 0
-location $cab_locale$
-password $encrypt_type$ $vty_password$
+location {{ snmp_cabinet_location }}
+password {{ vty_password }}
 access-class 91 in
 logging synchronous
 transport input ssh
