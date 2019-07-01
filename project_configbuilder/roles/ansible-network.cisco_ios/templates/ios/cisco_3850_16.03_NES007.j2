@@ -1,9 +1,9 @@
 {% extends "cisco_ios_base_NES007.j2" %}
-{% block ip_classless_3850 %}
+{% block child_3850_ip_classless %}
 ip classless
-{% endblock ip_classless_3850 %}
+{% endblock child_3850_ip_classless %}
 
-{% block tacacs_3850 %}
+{% block child_3850_tacacs_server %}
 tacacs server TACACS_SERVER
 {% for server in auth_server %}
  address ipv4 {{server}}
@@ -11,13 +11,12 @@ tacacs server TACACS_SERVER
  key 0 {{ tacacs_password }}
 tacacs-server directed-request
 tacacs-server timeout 10
-{% endblock tacacs_3850 %}
+{% endblock child_3850_tacacs_server %}
 
-{% block snmp_server_3850 %}
+{% block child_3850_snmp_server %}
 snmp-server ifindex persist
 {% for server in snmp_server %}
 snmp-server host {{server}} {{ snmp_community_string }} mac-notification
 {% endfor %}
-{% endblock snmp_server_3850 %}
-
+{% endblock child_3850_snmp_server %}
 

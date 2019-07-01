@@ -10,7 +10,7 @@
     - name: Generate NES007 configuration
       template:
         src: /var/lib/awx/projects/project_configbuilder/roles/ansible-network.cisco_ios/templates/ios/cisco_{{ product_and_ios }}_NES007.j2
-        dest: "/var/lib/awx/projects/project_configbuilder/builds/cisco_3850_16.03_NES007_{{ ansible_date_time.date }}_{{ ansible_date_time.time }}.txt"
+        dest: "/var/lib/awx/projects/project_configbuilder/builds/cisco_{{ product_and_ios }}_NES007_{{ ansible_date_time.date }}_{{ ansible_date_time.time }}.txt"
         owner: root
         group: root
         mode: 0777

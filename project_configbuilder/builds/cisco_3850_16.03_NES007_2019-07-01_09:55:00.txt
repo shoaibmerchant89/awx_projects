@@ -1,0 +1,203 @@
+!
+! SERVICES
+!
+no service config
+no service pad
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec localtime show-timezone
+service timestamps log datetime msec localtime show-timezone
+service password-encryption
+service sequence-numbers
+service counters max age 5
+no service finger
+no service udp-small-servers
+no service tcp-small-servers
+no ip http server
+no ip source-route
+no ip forward-protocol udp tftp
+no ip forward-protocol udp domain
+no ip forward-protocol udp nameserver
+no ip forward-protocol udp time
+no ip forward-protocol udp netbios-ns
+no ip forward-protocol udp netbios-dgm
+no ip forward-protocol udp tacacs
+ip forward-protocol udp bootpc
+ip forward-protocol udp bootps
+ip subnet-zero
+ip classless
+ip tcp synwait-time 5
+no ip http server
+no monitor event-trace timestamps
+no ip bootp server
+username barcadmin secret cisco@123
+enable secret en@bl3
+ip domain name net.global
+no ip domain-lookup
+hostname ios001-test
+vtp domain vtpdomain
+vtp mode transparent
+!
+tacacs server TACACS_SERVER
+ address ipv4 20.1.1.2
+ key 0 tacac$pa$$w0rd
+tacacs-server directed-request
+tacacs-server timeout 10
+!
+!
+! AAA
+!
+aaa new-model
+aaa group server tacacs+ AAA_SERVER
+ server 20.1.1.2
+ip tacacs source-interface ethernet0/0
+aaa authentication login default local
+aaa authentication enable default enable
+aaa authorization config-commands
+aaa authorization exec default none
+aaa authorization commands 1 default none
+aaa authorization commands 15 default none
+aaa authorization console
+aaa accounting exec default start-stop group AAA_SERVER
+aaa accounting commands 0 default start-stop group AAA_SERVER
+aaa accounting commands 1 default start-stop group AAA_SERVER
+aaa accounting commands 15 default start-stop group AAA_SERVER
+aaa accounting connection default start-stop group AAA_SERVER
+aaa accounting system default start-stop group AAA_SERVER
+aaa local authentication attempts max-fail 3
+aaa session-id common
+!
+! SNMP
+!
+access-list 40 remark deny Access
+access-list 40 deny any log
+access-list 41 remark SNMP RO ACL Region Specific
+access-list 41 permit 20.1.1.3
+access-list 41 deny any log
+access-list 42 Remark RW ACL Region Specific
+access-list 42 permit 20.1.1.3
+access-list 42 deny any log
+snmp-server community public RO 40
+snmp-server community private RO 40
+snmp-server community c0mmstr1ng RO 41
+snmp-server community c0mmstr1ng RW 42
+snmp-server enable traps
+snmp-server location RACK001
+snmp-server contact netops@networkology.net
+snmp-server trap link ietf
+snmp-server enable traps snmp auhentication linkdown linkup coldstart warmstart
+snmp-server enable traps syslog
+snmp-server enable traps envmon fan shutdown supply temperature status
+snmp-server packetsize 8192
+snmp ifmib ifindex persist
+snmp-server enable traps hsrp
+snmp-server enable traps config
+snmp-server enable traps vtp
+snmp-server host 20.1.1.3 c0mmstr1ng
+snmp-server trap-source ethernet0/0
+snmp-server ifindex persist
+snmp-server host 20.1.1.3 c0mmstr1ng mac-notification
+!
+! LOGGING
+!
+logging source-interface ethernet0/0
+logging 20.1.1.1
+logging trap informational
+logging buffered 
+logging console debugging
+logging monitor debugging
+logging rate-limit console 10
+!
+! NTP
+!
+ntp source ethernet0/0
+ntp server 20.1.1.4
+ntp server 20.1.1.5
+access-list 95 remark NTP ACL
+access-list 95 permit host 20.1.1.4
+access-list 95 permit host 20.1.1.5
+access-list 95 deny  any
+ntp access-group peer 95
+clock timezone AMER_DMZ_TIMEZONE
+clock summer-time AMER_DMZ_SUMMER_TIME
+!
+! SSH
+!
+crypto key generate rsa general-keys modulus 2048
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 2
+ip ssh logging events
+ip ssh source-interface ethernet0/0
+!
+! LOCAL SECURITY
+!
+login block-for 1800 attempts 5 within 30
+access-list 91 Remark Management access to Devices via Jump server!!!
+access-list 91 permit host <management_station>
+login quiet-mode access-class 91
+login on-failure log every 5
+login on-success log
+!
+! BANNER MOTD
+!
+banner login ^C
+=------------------------------------------------------------------------------=
+LEGAL NOTICE
+YOU MAY COMMIT A CRIMINAL OFFENCE IF YOU ACT OUTSIDE YOUR AUTHORITY IN
+RELATION TO THIS COMPUTER. THE PENALTY IS A FINE, IMPRISONMENT OR BOTH.
+IF YOU ARE ACTING OUTSIDE YOUR AUTHORITY, DO NOT PROCEED ANY FURTHER.
+IF YOU ARE ACTING WITHIN YOUR AUTHORITY, PLEASE NOTE THAT YOUR USE OF
+THIS SYSTEM MAY BE MONITORED BY BARCLAYS GROUP FOR OPERATIONAL OR
+BUSINESS REASONS.
+=------------------------------------------------------------------------------=
+^C
+!
+! LINE
+!
+privilege exec level 15 connect
+privilege exec level 15 ssh
+privilege exec level 15 telnet
+line con 0
+exec-timeout 5 0
+location RACK001
+password c0ns0l3
+logging synchronous
+transport preferred none
+stopbits 1
+line aux 0
+location RACK001
+password c0ns0l3
+exec-timeout 5 0
+logging synchronous
+no exec
+transport preferred none
+transport output none
+stopbits 1
+line vty 0 4
+exec-timeout 5 0
+location RACK001
+password vtypassw0rd
+access-class 91 in
+logging synchronous
+transport input ssh
+transport output none
+line vty 5 15
+exec-timeout 5 0
+location RACK001
+password vtypassw0rd
+access-class 91 in
+logging synchronous
+transport input ssh
+transport output none
+!
+! ADDITIONAL COMMANDS
+!
+port-channel load-balance src-dst-port
+spanning-tree mode rapid-pvst
+spanning-tree loopguard default
+spanning-tree portfast bpduguard default
+spanning-tree extend system-id
+udld aggressive
+!
+

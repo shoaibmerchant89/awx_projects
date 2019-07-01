@@ -1,9 +1,18 @@
+{% extends "cisco_ios_base_NES007.j2" %}
+{% block child_4500_vlan_internal %}
 vlan internal allocation policy ascending
+{% endblock child_4500_vlan_internal %}
 !
+{% block child_4500_tacacs_server %}
 {% for server in auth_server %}
 tacacs-server host <auth_server>					  
 {% endfor %}
-tacacs-server key $encrypt_type$ $tacacs_password$
+tacacs-server key 0 {{ tacacs_password }}
 tacacs-server directed-request
 tacacs-server timeout 10
+{% endblock child_4500_tacacs_server %}
+!
+{% block child_4500_spanning_tree %}
 no spanning-tree optimize bpdu transmission
+{% endblock child_4500_spanning_tree %}
+
