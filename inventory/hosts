@@ -12,11 +12,11 @@ all:
                       ios01:
                         ansible_host: '192.168.1.101'
                         ansible_network_os: ios
-#                  apac_nxos:
-#                    hosts:
-#                      nxos01:
-#                        ansible_host: '192.168.1.104'
-#                        ansible_network_os: nxos
+                  apac_nxos:
+                    hosts:
+                      nxos01:
+                        ansible_host: '192.168.1.104'
+                        ansible_network_os: nxos
           emea:
             children:
               emea_cisco:

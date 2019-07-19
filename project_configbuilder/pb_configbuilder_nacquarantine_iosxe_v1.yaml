@@ -1,0 +1,53 @@
+- name: Gather IOS Facts
+  hosts: apac_ios
+  connection: network_cli
+  gather_facts: false
+  
+  tasks:
+    - name: Gathering IOS facts
+      ios_facts:
+        gather_subset: all
+    
+    - name: Checking hardware model of IOS devices
+      debug:
+        msg: "{{ ansible_net_model }}"
+
+    - name: Checking IOS version of devices
+      debug:
+        msg: "{{ ansible_net_version }}"
+
+- name: Gather NXOS Facts
+  hosts: apac_nxos
+  connection: network_cli
+  gather_facts: false
+
+  tasks:
+    - name: Gathering NXOS facts
+      nxos_facts:
+        gather_subset: all
+
+    - name: Checking hardware model of NXOS devices
+      debug:
+        msg: "{{ ansible_net_model }}"
+
+    - name: Checking IOS version of devices
+      debug:
+        msg: "{{ ansible_net_version }}"
+
+
+#
+#    - name:
+#      ios_config:
+#        lines:
+#          - name NAC_QUARANTINE_VLAN
+#        parents: vlan 667
+#      register: nac_vlan_access
+#      when: ansible_facts['version'] == "3850"
+#
+#    - name:
+#      ios_command:
+#        commands:
+#          - vlan 667
+#          - name NAC_QUARANTINE_VLAN
+#      register: nac_vlan              
+
