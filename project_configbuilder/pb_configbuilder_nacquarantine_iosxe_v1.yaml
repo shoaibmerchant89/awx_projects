@@ -1,20 +1,20 @@
 - name: Gather IOS Facts
   hosts: apac_ios
   connection: network_cli
-  gather_facts: false
+  gather_facts: true
   
   tasks:
     - name: Gathering IOS facts
       ios_facts:
         gather_subset: all
     
-    - name: Checking hardware model of IOS devices
-      debug:
-        msg: "{{ ansible_net_model }}"
+#    - name: Checking hardware model of IOS devices
+#      debug:
+#        msg: "{{ ansible_net_model }}"
 
-    - name: Checking IOS version of devices
-      debug:
-        msg: "{{ ansible_net_version }}"
+#    - name: Checking IOS version of devices
+#      debug:
+#        msg: "{{ ansible_net_version }}"
 
 - name: Gather NXOS Facts
   hosts: apac_nxos
@@ -26,15 +26,35 @@
       nxos_facts:
         gather_subset: all
 
-    - name: Checking hardware model of NXOS devices
-      debug:
-        msg: "{{ ansible_net_model }}"
+#    - name: Checking hardware model of NXOS devices
+#      debug:
+#        msg: "{{ ansible_net_model }}"
 
-    - name: Checking IOS version of devices
-      debug:
-        msg: "{{ ansible_net_version }}"
+#    - name: Checking NXOS version of devices
+#      debug:
+#        msg: "{{ ansible_net_version }}"
 
+- name: Create Quarantine ACL
+  hosts: apac
+  connection: network_cli
+  gather_facts: false
 
+  tasks:
+    - name: Creating Quarantine ACL on NXOS switches
+      nxos_config:
+        lines:
+          - 10 permit any aabb.cc01.f010 ffff.ffff.ffff 
+          - 20 deny any any
+        parents: mac access-list NAC_QUARANTINE_ACL
+      when: ansible_net_version == "7.0(3)I7(3)" and ansible_net_model == "Nexus9000 9000v Chassis"
+
+    - name: Creating Quarantine ACL on IOS switches
+      ios_config:
+        lines:
+          - permit ip any host 2.2.2.2
+          - deny ip any any
+        parents: ip access-list extended NAC_QUARANTINE_ACL
+      when: ansible_net_version == "15.1(20130726:213425)"
 #
 #    - name:
 #      ios_config:
