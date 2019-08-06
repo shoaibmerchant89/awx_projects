@@ -1,0 +1,14 @@
+---
+- name: Deploying config to Fortigate
+  fortios_config:
+    backup: no
+    src: /var/lib/awx/projects/project_configbuilder/roles/ansible-network.fortinet/templates/fortinet_fgt_603.j2
+    username: admin
+    password: 'Labrat@123'
+    host: 192.168.1.108
+    timeout: 3
+  register: fortios
+
+- name: debug
+  debug:
+    msg: "{{ fortios }}"

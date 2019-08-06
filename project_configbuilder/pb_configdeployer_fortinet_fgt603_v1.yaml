@@ -1,0 +1,9 @@
+---
+- name: Deploy config to Fortigate v6.0.3 devices
+  connection: ssh
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - include_role:
+        name: ansible-network.fortinet
+        tasks_from: task_fortinet_push_config.yaml

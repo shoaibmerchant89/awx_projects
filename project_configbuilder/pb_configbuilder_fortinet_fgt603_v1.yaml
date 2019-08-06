@@ -1,0 +1,17 @@
+---
+- name: Generate config for Fortigate v6.0.3 devices
+  hosts: localhost
+  connection: local
+  gather_facts: true
+  tasks:
+    - name: Include vars
+      include_vars:
+        file: /var/lib/awx/projects/project_configbuilder/group_vars/{{ region }}-{{ dc }}-{{ env }}.yaml
+
+    - name: Generate NES007 configuration
+      template:
+        src: /var/lib/awx/projects/project_configbuilder/roles/ansible-network.fortinet/templates/fortinet_{{ product_and_os }}.j2
+        dest: "/var/lib/awx/projects/project_configbuilder/builds/fortinet_{{ product_and_os }}_NES007_{{ ansible_date_time.date }}_{{ ansible_date_time.time }}.txt"
+        owner: root
+        group: root
+        mode: 0777
