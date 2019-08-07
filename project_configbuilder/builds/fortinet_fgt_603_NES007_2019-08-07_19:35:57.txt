@@ -1,5 +1,5 @@
 config system global
-set hostname {{ hostname }}
+set hostname FGT112
 end
 !
 config system ntp
@@ -8,13 +8,13 @@ set ntpsync enable
     set syncinterval 60
     config ntpserver
         edit 1
-            set server {{ ntp_server.server1 }}
+            set server 30.1.1.4
         next
         edit 2
-            set server {{ ntp_server.server2 }}
+            set server 30.1.1.5
         next
     end
-    set source-ip {{ management_ip }}
+    set source-ip 192.168.1.108
     set server-mode disable
 end
 

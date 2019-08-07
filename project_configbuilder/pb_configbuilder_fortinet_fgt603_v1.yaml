@@ -15,3 +15,12 @@
         owner: root
         group: root
         mode: 0777
+      register: results
+    
+    - debug:
+        msg: "{{ results.dest }}"
+
+    - name: Save fact for build file location
+      set_stats:
+        data:
+          build_location: "{{ results.dest }}"

@@ -6,9 +6,7 @@ auth_server:
   - 20.1.1.2
 snmp_server:
   - 20.1.1.3
-ntp_server:
-  - 20.1.1.4
-  - 20.1.1.5
+ntp_server: {server1: 30.1.1.4, server2: 30.1.1.5}
 timezone:
   - AMER_DMZ_TIMEZONE
 summer_time:
