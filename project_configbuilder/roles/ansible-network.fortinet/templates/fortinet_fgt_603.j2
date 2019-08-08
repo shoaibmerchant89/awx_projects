@@ -1,20 +1,11 @@
-config system global
-set hostname {{ hostname }}
+{% extends "fortinet_base.j2" %}
+{% block child_fmg %}
+config system central-management
+   set type fortimanager
+   set fmg {{ fortimanager.server1 }}
+   set enc-algorithm low
+   set vdom root
+   set include-default-servers disable
 end
-!
-config system ntp
-set ntpsync enable
-    set type custom
-    set syncinterval 60
-    config ntpserver
-        edit 1
-            set server {{ ntp_server.server1 }}
-        next
-        edit 2
-            set server {{ ntp_server.server2 }}
-        next
-    end
-    set source-ip {{ management_ip }}
-    set server-mode disable
-end
-
+execute central-mgmt register-device {{ fmg_serial_number }} {{fmg_register_password }}
+{% endblock %}

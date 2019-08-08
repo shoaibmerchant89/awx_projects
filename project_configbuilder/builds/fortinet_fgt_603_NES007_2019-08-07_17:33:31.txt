@@ -1,3 +1,0 @@
-config system global
-set hostname FGT5
-end

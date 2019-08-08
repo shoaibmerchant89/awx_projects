@@ -1,0 +1,14 @@
+---
+all:
+  children:
+      all_regions:
+        children:
+          apac:
+            children:
+              apac_fortinet:
+                children:
+                  apac_fgt:
+                    hosts:
+                      fmg01:
+                        ansible_host: '192.168.1.109'
+                        ansible_network_os: 'fortimanager'

@@ -1,0 +1,25 @@
+!
+config system global
+set admin-lockout-threshold 5
+set admin-lockout-duration 1800
+set hostname {{ hostname }}
+set admintimeout 15
+end
+!
+config system ntp
+set ntpsync enable
+    set type custom
+    set syncinterval 60
+    config ntpserver
+        edit 1
+            set server {{ ntp_server.server1 }}
+        next
+        edit 2
+            set server {{ ntp_server.server3 }}
+        next
+    end
+    set source-ip {{ fgt_management_ip }}
+    set server-mode disable
+end
+{% block child_fmg %}
+{% endblock child_fmg %}

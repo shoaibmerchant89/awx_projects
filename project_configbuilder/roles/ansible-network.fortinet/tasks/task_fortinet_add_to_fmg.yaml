@@ -1,0 +1,16 @@
+---
+- name: Registering Fortigate to FortiManager
+  fmgr_device:
+    adom: root
+    device_username: {{ fgt_username }}
+    device_password: {{ fgt_password }}
+    device_ip: {{ management_ip }}
+    device_unique_name: {{ hostname }}
+    device_serial: {{ fgt_serial_number }}
+    mode: add
+	blind_add: disable
+  register: fortimanager
+
+#- name: debug
+#  debug:
+#    msg: "{{ fortimanager }}"

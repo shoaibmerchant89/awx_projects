@@ -3,9 +3,9 @@
   fortios_config:
     backup: no
     src: "{{ build_location }}"
-    username: admin
-    password: 'Labrat@123'
-    host: 192.168.1.108
+    username: "{{ fgt_username }}"
+    password: "{{ fgt_password }}"
+    host: "{{ fgt_management_ip }}"
     timeout: 3
   register: fortios
 
