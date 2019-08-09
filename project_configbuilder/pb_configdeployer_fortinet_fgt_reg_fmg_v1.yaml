@@ -3,7 +3,7 @@
   hosts: fmg01
   connection: httpapi
   gather_facts: False
-
+  
   tasks:
     - name: Registering Fortigate to FortiManager
       fmgr_device:
@@ -12,4 +12,4 @@
         device_password: Labrat@123
         device_ip: 192.168.1.108
         device_unique_name: FGT01
-      ignore_errors: yes
+#      ignore_errors: yes
