@@ -1,0 +1,14 @@
+---
+- name: Registering Fortigate to FortiManager
+  fmgr_device:
+    adom: "root"
+    device_username: "admin"
+    device_password: "Labrat@123"
+    device_ip: "192.168.1.108"
+    device_unique_name: "FGT01"
+    mode: "add"
+  register: fortimanager
+
+#- name: debug
+#  debug:
+#    msg: "{{ fortimanager }}"

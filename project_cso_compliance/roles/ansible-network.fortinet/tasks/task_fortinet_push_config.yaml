@@ -1,0 +1,14 @@
+---
+- name: Deploying config to Fortigate
+  fortios_config:
+    backup: no
+    src: "{{ build_location }}"
+    username: "{{ fgt_username }}"
+    password: "{{ fgt_password }}"
+    host: "{{ fgt_management_ip }}"
+    timeout: 3
+  register: fortios
+
+#- name: debug
+#  debug:
+#    msg: "{{ fortios }}"

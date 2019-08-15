@@ -1,0 +1,42 @@
+---
+
+- name: Initiating compliance check against Mandatory Controls
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  
+  tasks:
+
+#    - name: get running-config
+#      ios_command:
+#        commands:
+#          - show run
+#      register: run_config
+    
+    - name: Importing network-engine roles/ansible-network
+      import_role:
+        name: ansible-network.network-engine
+
+    - name: Sending generated config file or jinja2 template to parser
+      command_parser:
+# use the parser template which consists of the mapped commands against the controls
+        file: "/var/lib/awx/projects/project_cso_compliance/roles/ansible-network.fortinet/parser_templates/parsertemplate_mandatory_controls_fortinet_fgt_v2.yaml"
+# check compliance of the jinja2 template
+#        content: "/var/lib/awx/projects/project_configbuilder/roles/ansible-network.fortinet/templates/fortinet_base.j2"
+# check compliance of the generated config
+        content: "/var/lib/awx/projects/project_configbuilder/builds/fortinet"
+      vars:
+        - ansible_network_os: fortios
+        - export_type: "list"
+
+    - debug:
+        msg: "{{ mapped_commands }}"
+#        msg: "{{ admin_lockout }}"
+
+    - name: Display mappings
+      debug:
+        var: control_mapping
+
+# use the below content lines if you want to check the mandatory control mapping for a specific NES007 template
+#        content: "{{ lookup('file', '/etc/ansible/roles/ansible-network.cisco_ios/templates/ios/cisco_3850_16.03_NES-007.j2') }}"
+#        content: "etc/ansible/roles/ansible-network.cisco_ios/templates/cisco_3850_16.03_nes-007.j2"
