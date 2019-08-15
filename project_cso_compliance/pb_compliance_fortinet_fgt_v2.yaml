@@ -7,35 +7,34 @@
   
   tasks:
 
-#    - name: get running-config
-#      ios_command:
-#        commands:
-#          - show run
-#      register: run_config
-    
+    - name: get running-config
+      fortios_config:
+        host: 192.168.1.108
+        username: admin
+        password: Labrat@123
+      register: run_config
+
+    - name: Debug
+      debug:
+        msg: "{{ run_config.stdout }}"
+  
     - name: Importing network-engine roles/ansible-network
       import_role:
         name: ansible-network.network-engine
 
-#    - name: Checking ubuntu version
-#      shell: "lsb_release -a"
-#      register: shell
-
-
     - name: Sending generated config file or jinja2 template to parser
-      vars:
-        - ansible_network_os: fortios
-        - contents: "{{ lookup('file', '/var/lib/awx/projects/project_configbuilder/builds/fortinet.txt') }}"
-#        - export_type: "dict"
       command_parser:
 # use the parser template which consists of the mapped commands against the controls
         file: "/var/lib/awx/projects/project_cso_compliance/roles/ansible-network.fortinet/parser_templates/parsertemplate_mandatory_controls_fortinet_fgt_v2.yaml"
 # check compliance of the jinja2 template
 #        content: "/var/lib/awx/projects/project_configbuilder/roles/ansible-network.fortinet/templates/fortinet_base.j2"
 # check compliance of the generated config
-        content: "{{ contents }}"
+#        content: "/var/lib/awx/projects/project_configbuilder/builds/fortinet.txt"
 # check compliance of command output
-#        content: "{{ shell.stdout.0 }}"
+        content: "{{ run_config.stdout.0 }}"
+      vars:
+        - ansible_network_os: fortios
+        - export_type: "dict"
 
 #    - debug:
 #        msg: "{{ mapped_commands.admin_lockout }}"
