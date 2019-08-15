@@ -2,7 +2,7 @@
 config system global
 set admin-lockout-threshold 5
 set admin-lockout-duration 1800
-set hostname FGT03
+set hostname HOSTNAME_ASHISH
 set admintimeout 15
 end
 !

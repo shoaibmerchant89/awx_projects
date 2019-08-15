@@ -1,15 +1,33 @@
 ---
 - name: Register to FMG
   hosts: fmg01
+#  connection: local
   connection: httpapi
   gather_facts: False
   
   tasks:
     - name: Registering Fortigate to FortiManager
       fmgr_device:
-        adom: root
-        device_username: admin
-        device_password: Labrat@123
-        device_ip: 192.168.1.108
-        device_unique_name: FGT01
+        adom: "root"
+        device_username: "admin"
+        device_password: "Labrat@123"
+        device_ip: "192.168.1.108"
+        device_unique_name: "FGT114"
+        device_serial: "FGVMEVCHF5WNK_13"
+#        mode: "delete"
+#        blind_add: "disable"
+#      ignore_errors: yes
+
+# use below for ansible 2.7 - but it doesn't work
+#      fmgr_provisioning:
+#        adom: "root"
+#        host: "192.168.1.109"
+#        name: "FGT114"
+#        os_type: "FOS"
+#        os_version: "6.0.3"
+#        platform: "FortiGate-VM64"
+#        policy_package: "default"
+#        serial: "FGVMEVCHF5WNK_13"
+#        username: "admin"
+#        password: "Labrat@123"
 #      ignore_errors: yes
