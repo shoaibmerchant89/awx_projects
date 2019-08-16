@@ -1,33 +1,22 @@
 ---
-
-# Measuring SCD compliance
+# Measuring BUILD compliance
 
 - name: Initiating compliance check against Mandatory Controls
   hosts: localhost
   connection: network_cli
   gather_facts: false
-  
+
   tasks:
 
-#    - name: get running-config
-#      ios_command:
-#        commands:
-#          - show run
-#      register: run_config
-    
     - name: Importing network-engine roles/ansible-network
       import_role:
         name: ansible-network.network-engine
 
-#    - name: Checking ubuntu version
-#      shell: "lsb_release -a"
-#      register: shell
-
-
     - name: Sending generated config file or jinja2 template to parser
       vars:
         - ansible_network_os: fortios
-        - contents: "{{ lookup('file', '/var/lib/awx/projects/project_configbuilder/roles/ansible-network.fortinet/templates/fortinet_fgt_603.j2') }}"
+#        - build_location: '/var/lib/awx/projects/project_configbuilder/builds/fortinet.txt'
+        - build_content: "{{ lookup('file', build_location ) }}"
 #        - export_type: "dict"
       command_parser:
 # use the parser template which consists of the mapped commands against the controls
@@ -35,7 +24,7 @@
 # check compliance of the jinja2 template
 #        content: "/var/lib/awx/projects/project_configbuilder/roles/ansible-network.fortinet/templates/fortinet_base.j2"
 # check compliance of the generated config
-        content: "{{ contents }}"
+        content: "{{ build_content }}"
 # check compliance of command output
 #        content: "{{ shell.stdout.0 }}"
 

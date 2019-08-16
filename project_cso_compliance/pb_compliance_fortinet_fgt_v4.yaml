@@ -1,33 +1,34 @@
 ---
-
-# Measuring SCD compliance
+# Measuring INSTANCE compliance
 
 - name: Initiating compliance check against Mandatory Controls
-  hosts: localhost
-  connection: network_cli
+  hosts: fgt01
+  connection: local
   gather_facts: false
-  
+
   tasks:
 
-#    - name: get running-config
-#      ios_command:
-#        commands:
-#          - show run
-#      register: run_config
-    
     - name: Importing network-engine roles/ansible-network
       import_role:
         name: ansible-network.network-engine
 
-#    - name: Checking ubuntu version
-#      shell: "lsb_release -a"
-#      register: shell
-
+    - name: Gather fortios config
+      fortios_config:
+        backup: yes
+        backup_path: '/tmp'
+        host: "{{ fgt_management_ip }}"
+        username: "{{ fgt_username }}"
+        password: "{{ fgt_password }}"
+        backup_filename: fortigate_backup.txt
+      register: running_config
+      become: yes
+      ignore_errors: yes
 
     - name: Sending generated config file or jinja2 template to parser
       vars:
+        - backup_filename: '/tmp/fortigate_backup.txt'
         - ansible_network_os: fortios
-        - contents: "{{ lookup('file', '/var/lib/awx/projects/project_configbuilder/roles/ansible-network.fortinet/templates/fortinet_fgt_603.j2') }}"
+        - contents: "{{ lookup('file', backup_filename ) }}"
 #        - export_type: "dict"
       command_parser:
 # use the parser template which consists of the mapped commands against the controls
@@ -36,8 +37,6 @@
 #        content: "/var/lib/awx/projects/project_configbuilder/roles/ansible-network.fortinet/templates/fortinet_base.j2"
 # check compliance of the generated config
         content: "{{ contents }}"
-# check compliance of command output
-#        content: "{{ shell.stdout.0 }}"
 
 #    - debug:
 #        msg: "{{ mapped_commands.admin_lockout }}"

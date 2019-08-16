@@ -16,7 +16,7 @@
         device_serial: "FGVMEVCHF5WNK_13"
 #        mode: "delete"
 #        blind_add: "disable"
-#      ignore_errors: yes
+      ignore_errors: yes
 
 # use below for ansible 2.7 - but it doesn't work
 #      fmgr_provisioning:
